@@ -1,0 +1,210 @@
+---
+title: 'CSV Upload for Bulk Analysis'
+description: 'Upload CSV files to analyze multiple comments at once'
+---
+
+## Overview
+
+The CSV Upload feature allows you to perform bulk sentiment analysis on large volumes of comments. Instead of analyzing comments one at a time, you can upload a CSV file and receive results for all comments simultaneously.
+
+## Preparing Your CSV File
+
+### File Format Requirements
+
+Your CSV file should contain a column with the text comments you want to analyze. Ensure your file:
+
+- Is saved in **.csv format**
+- Contains plain text comments (one per row)
+- Uses UTF-8 encoding for special characters
+- Has appropriate column headers
+
+### File Size Limits
+
+<Warning>
+  The maximum file size is **3 MB**. Files larger than this will be rejected before upload.
+</Warning>
+
+If your file exceeds 3 MB, consider:
+- Splitting it into multiple smaller files
+- Removing unnecessary columns
+- Compressing verbose comments
+
+## Upload Process
+
+<Steps>
+  <Step title="Navigate to the Upload Page">
+    From the main navigation, select **Análisis de Masivo** (Bulk Analysis) or the CSV Upload option.
+  </Step>
+  
+  <Step title="Select Your CSV File">
+    Click on **"Seleccionar CSV"** (Select CSV) in the upload area. A file browser will open.
+    
+    Navigate to your CSV file and select it. The filename will appear in the upload area to confirm your selection.
+  </Step>
+  
+  <Step title="Validate File Size">
+    Before uploading, the system automatically checks if your file is under 3 MB. If it's too large, you'll see an error message:
+    
+    ```
+    El archivo es demasiado pesado (X.XX MB). 
+    Por favor, sube uno menor a 3MB.
+    ```
+  </Step>
+  
+  <Step title="Upload and Process">
+    Click **"Iniciar Procesamiento Masivo"** (Start Bulk Processing). The button will change to "Analizando con IA..." (Analyzing with AI) while your file is being processed.
+  </Step>
+  
+  <Step title="View Results">
+    Once processing completes, a detailed results table will appear showing the sentiment analysis for each comment in your CSV.
+  </Step>
+</Steps>
+
+## Understanding the Results
+
+After successful upload and processing, you'll see:
+
+### Success Message
+
+A green confirmation banner appears at the top:
+
+```
+¡Excelente! El archivo se procesó correctamente.
+```
+
+### Results Summary
+
+Above the results table, you'll see:
+- **Total comment count**: Number of comments analyzed (e.g., "47 Comentarios encontrados")
+- **Export option**: Button to download results as CSV
+
+### Detailed Results Table
+
+Each row in the table contains:
+
+| Column | Description |
+|--------|-------------|
+| **Comentario** | The original comment text from your CSV |
+| **Prevision** | Sentiment classification (POSITIVO or NEGATIVO) with colored badge |
+| **Probabilidad** | Confidence score (0-100%) with visual progress bar |
+
+<Note>
+  Results are displayed in the same order as they appear in your uploaded CSV file.
+</Note>
+
+## Exporting Results
+
+After viewing your results, you can export them for further analysis:
+
+1. Click the **"Exportar CSV"** (Export CSV) button in the results header
+2. The button will show "Generando..." (Generating) during export
+3. A CSV file named `resultados_sentimiento.csv` will automatically download to your device
+
+The exported CSV includes:
+- Original comment text
+- Sentiment prediction (POSITIVO/NEGATIVO)
+- Probability/confidence score
+
+## Error Handling
+
+### File Too Large
+
+**Error Message**:
+```
+El archivo supera el límite de 3MB. 
+Intenta con un archivo más pequeño.
+```
+
+**Solution**: Split your CSV into smaller files or remove unnecessary data.
+
+### Server Errors
+
+**Error Message**:
+```
+Error interno del servidor. Inténtalo más tarde.
+```
+
+**Solution**: Wait a few minutes and try uploading again. If the problem persists, contact support.
+
+### Connection Issues
+
+**Error Message**:
+```
+No se pudo conectar con el servidor. 
+Verifica tu conexión.
+```
+
+**Solution**: 
+- Check your internet connection
+- Refresh the page and try again
+- Ensure the SentimentAPI service is available
+
+### Permissions Error
+
+**Error Message**:
+```
+No tienes permisos para realizar esta acción.
+```
+
+**Solution**: Verify you're logged in with the correct account that has upload permissions.
+
+### Session Expired
+
+<Warning>
+  If your session has expired during upload preparation, you'll see an authentication error. Log in again to continue.
+</Warning>
+
+**Error Message**:
+```
+Sesión expirada. Por favor, inicia sesión nuevamente.
+```
+
+**Solution**: Click the "Ir al Login" button and log in again. You may need to re-select your CSV file.
+
+## Best Practices
+
+### Before Uploading
+
+- **Validate your CSV**: Open it in a spreadsheet application to ensure proper formatting
+- **Check file size**: Right-click the file and view properties to confirm it's under 3 MB
+- **Remove duplicates**: Eliminate duplicate comments to get cleaner results
+- **Clean the data**: Remove unnecessary columns and special characters that might cause issues
+
+### During Upload
+
+- **Stable connection**: Ensure you have a stable internet connection before starting
+- **Don't refresh**: Avoid refreshing the page while upload is in progress
+- **Wait for completion**: Large files may take several seconds to process
+
+### After Upload
+
+<Tip>
+  Export your results immediately after processing to ensure you have a backup copy.
+</Tip>
+
+- Download the results CSV for your records
+- Review low-confidence predictions manually
+- Use the statistics dashboard to get aggregate insights
+
+## Common Questions
+
+**Q: Can I upload multiple CSV files at once?**
+
+A: No, you need to upload and process files one at a time. Process one file, download the results, then upload the next.
+
+**Q: What happens to my data after upload?**
+
+A: Your comments are analyzed and stored in the database, allowing you to view statistics later. See the [Viewing Statistics guide](/guides/viewing-statistics) for more information.
+
+**Q: How long does processing take?**
+
+A: Processing time depends on the number of comments. Typically, a few hundred comments process within 10-30 seconds.
+
+**Q: Can I cancel an upload in progress?**
+
+A: Once you click "Iniciar Procesamiento Masivo," the upload cannot be cancelled. Ensure your file is correct before submitting.
+
+## Next Steps
+
+- [View aggregate statistics](/guides/viewing-statistics) across all your analyzed comments
+- Learn about [session management](/guides/authentication) to avoid interruptions during upload

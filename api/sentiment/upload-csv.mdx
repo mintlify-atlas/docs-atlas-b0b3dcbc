@@ -1,0 +1,256 @@
+---
+title: "Upload CSV"
+api: "POST /sentiment/upload-csv"
+description: "Upload a CSV file for batch sentiment analysis"
+---
+
+## Endpoint
+
+```
+POST {NEXT_PUBLIC_API_URL}/sentiment/upload-csv
+```
+
+Uploads a CSV file containing comments for batch sentiment analysis. The API processes all comments and returns sentiment predictions for each.
+
+## Authentication
+
+This endpoint requires a valid JWT token obtained from the `/login` endpoint.
+
+## Headers
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token for authentication
+  
+  Format: `Bearer {token}`
+</ParamField>
+
+## Request Body
+
+The request must be sent as `multipart/form-data` with a file field:
+
+<ParamField body="file" type="file" required>
+  CSV file containing text comments to analyze
+  
+  **Maximum file size:** 3 MB
+  
+  **Accepted format:** `.csv`
+</ParamField>
+
+## File Size Limits
+
+- **Maximum size:** 3 MB (3,145,728 bytes)
+- Files exceeding this limit will be rejected with a 401 or 413 error
+- Client-side validation is recommended before upload
+
+## Response
+
+Returns an array of `AnalisisResultado` objects:
+
+<ResponseField name="texto" type="string">
+  The original text from the CSV
+</ResponseField>
+
+<ResponseField name="prevision" type="string">
+  The predicted sentiment classification
+  
+  Possible values: `"POSITIVO"` | `"NEGATIVO"`
+</ResponseField>
+
+<ResponseField name="probabilidad" type="number">
+  Confidence score of the prediction (0.0 to 1.0)
+</ResponseField>
+
+### Response Interface
+
+```typescript
+interface AnalisisResultado {
+  texto: string;
+  prevision: 'POSITIVO' | 'NEGATIVO';
+  probabilidad: number;
+}
+```
+
+## Status Codes
+
+- **200 OK**: File processed successfully
+- **401 Unauthorized**: Missing/invalid token OR file exceeds 3MB limit
+- **403 Forbidden**: Insufficient permissions
+- **413 Payload Too Large**: File size exceeds server limit
+- **500 Internal Server Error**: Server error during processing
+
+## Examples
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.example.com/sentiment/upload-csv" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -F "file=@comments.csv"
+```
+
+```typescript TypeScript
+const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+const selectedFile = fileInput.files?.[0];
+
+if (!selectedFile) {
+  throw new Error("No file selected");
+}
+
+// Validate file size (3MB limit)
+const MAX_SIZE_MB = 3 * 1024 * 1024;
+if (selectedFile.size > MAX_SIZE_MB) {
+  throw new Error(`File too large: ${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB. Maximum: 3MB`);
+}
+
+const formData = new FormData();
+formData.append('file', selectedFile);
+
+const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sentiment/upload-csv`, {
+  method: "POST",
+  headers: { "Authorization": `Bearer ${token}` },
+  body: formData,
+});
+
+if (!response.ok) {
+  switch (response.status) {
+    case 401:
+      throw new Error("File exceeds 3MB limit or authentication failed");
+    case 413:
+      throw new Error("Server indicates file is too large");
+    case 403:
+      throw new Error("Insufficient permissions");
+    case 500:
+      throw new Error("Server error. Please try again later");
+    default:
+      throw new Error(`Unexpected error (${response.status})`);
+  }
+}
+
+const results: AnalisisResultado[] = await response.json();
+console.log("Analysis results:", results);
+```
+
+```javascript JavaScript
+const formData = new FormData();
+formData.append('file', selectedFile);
+
+fetch(`${process.env.NEXT_PUBLIC_API_URL}/sentiment/upload-csv`, {
+  method: "POST",
+  headers: { "Authorization": `Bearer ${token}` },
+  body: formData,
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log("CSV processed:", data);
+  })
+  .catch(error => {
+    console.error("Error:", error);
+  });
+```
+
+</CodeGroup>
+
+## Response Example
+
+```json
+[
+  {
+    "texto": "Excellent customer service",
+    "prevision": "POSITIVO",
+    "probabilidad": 0.93
+  },
+  {
+    "texto": "Product arrived damaged",
+    "prevision": "NEGATIVO",
+    "probabilidad": 0.87
+  },
+  {
+    "texto": "Highly recommend this!",
+    "prevision": "POSITIVO",
+    "probabilidad": 0.96
+  }
+]
+```
+
+## Error Handling
+
+<Expandable title="Common Error Scenarios">
+
+**File Too Large (401/413)**
+```typescript
+if (selectedFile.size > MAX_SIZE_MB) {
+  setMessage(`File too large (${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB). Maximum: 3MB`);
+  return;
+}
+```
+
+**Connection Error**
+```javascript
+catch (err) {
+  if (err.message === "Failed to fetch") {
+    setMessage("Cannot connect to server. Check your connection.");
+  }
+}
+```
+
+**Authentication Error (401)**
+```json
+{
+  "error": "Sesión expirada. Por favor, inicia sesión nuevamente."
+}
+```
+
+**Server Error (500)**
+```json
+{
+  "error": "Error interno del servidor. Inténtalo más tarde."
+}
+```
+
+</Expandable>
+
+## Client-Side Validation
+
+<Expandable title="Recommended Pre-Upload Checks">
+
+```typescript
+const handleUpload = async (selectedFile: File) => {
+  // 1. Check if file exists
+  if (!selectedFile) {
+    throw new Error("Please select a file first");
+  }
+
+  // 2. Validate file size
+  const MAX_SIZE_MB = 3 * 1024 * 1024;
+  if (selectedFile.size > MAX_SIZE_MB) {
+    const sizeMB = (selectedFile.size / (1024 * 1024)).toFixed(2);
+    throw new Error(`File too large (${sizeMB} MB). Maximum: 3MB`);
+  }
+
+  // 3. Validate file extension
+  if (!selectedFile.name.endsWith('.csv')) {
+    throw new Error("Only CSV files are accepted");
+  }
+
+  // 4. Proceed with upload
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  
+  // ... upload logic
+};
+```
+
+</Expandable>
+
+## Usage Notes
+
+- CSV files should contain text comments (check backend documentation for expected format)
+- Maximum file size is strictly enforced at 3 MB
+- Processing time depends on file size and number of comments
+- Results are returned in the same order as the CSV rows
+- Use the `/sentiment/export-csv` endpoint to download results as CSV

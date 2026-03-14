@@ -1,0 +1,127 @@
+---
+title: 'Single Comment Analysis'
+description: 'Step-by-step guide to analyzing individual comments for sentiment'
+---
+
+## Overview
+
+The Single Comment Analysis feature allows you to quickly analyze the sentiment of individual text comments. SentimentAPI's AI model will classify the comment as either positive or negative, along with a confidence score.
+
+## Accessing the Analysis Dashboard
+
+After logging in, you'll be automatically redirected to the **Panel de Análisis** (Analysis Dashboard), where you can analyze individual comments.
+
+## Analyzing a Comment
+
+<Steps>
+  <Step title="Enter Your Comment">
+    In the text input field, type or paste the comment you want to analyze. The placeholder text reads:
+    
+    ```
+    Escribe comentarios (uno por línea para análisis masivo)...
+    ```
+    
+    For single comment analysis, simply enter one comment.
+  </Step>
+  
+  <Step title="Submit for Analysis">
+    Click the **"Analizar Sentimientos"** (Analyze Sentiments) button. The button will change to "Procesando..." (Processing) while the AI model analyzes your comment.
+  </Step>
+  
+  <Step title="View Results">
+    Once processing is complete, a results table will appear below the input form showing the sentiment analysis.
+  </Step>
+</Steps>
+
+## Understanding the Results Table
+
+The results are displayed in a comprehensive table with the following columns:
+
+### 1. Comentario (Comment)
+
+Displays the original text you submitted for analysis. Long comments may be truncated in the display.
+
+### 2. Prevision (Prediction)
+
+Shows the AI model's sentiment classification:
+
+- **POSITIVO** - Displayed with a green badge and smile icon 😊
+- **NEGATIVO** - Displayed with a red badge and frown icon ☹️
+
+The color coding makes it easy to quickly identify the sentiment at a glance.
+
+### 3. Probabilidad (Probability/Confidence)
+
+This column shows two important pieces of information:
+
+- **Percentage score**: The model's confidence in its prediction (e.g., 87.3%)
+- **Visual progress bar**: A color-coded bar representing the confidence level
+  - Green bar for positive sentiments
+  - Red bar for negative sentiments
+
+<Note>
+  Higher probability scores (closer to 100%) indicate greater confidence in the prediction. Scores near 50% suggest the model is less certain about the sentiment.
+</Note>
+
+## Interpreting Confidence Scores
+
+### High Confidence (80-100%)
+
+The model is very confident in its classification. These predictions are typically reliable.
+
+**Example**: A comment like "This product is absolutely amazing!" might receive:
+- Prevision: POSITIVO
+- Probabilidad: 95.8%
+
+### Medium Confidence (60-80%)
+
+The model has moderate confidence. The sentiment is likely correct, but there may be some ambiguity in the text.
+
+**Example**: "It's okay, nothing special" might receive:
+- Prevision: NEGATIVO
+- Probabilidad: 72.1%
+
+### Low Confidence (50-60%)
+
+The model is uncertain. The comment may contain mixed sentiments or neutral language.
+
+<Tip>
+  For low confidence predictions, consider reviewing the comment manually to understand the nuanced sentiment.
+</Tip>
+
+## Example Workflow
+
+Here's a complete example of analyzing a comment:
+
+1. **Input**: "The customer service was excellent and very helpful!"
+2. **Click**: "Analizar Sentimientos"
+3. **Result**:
+   - Comentario: "The customer service was excellent and very helpful!"
+   - Prevision: POSITIVO (green badge with smile icon)
+   - Probabilidad: 92.4% (green progress bar)
+
+## Session Requirements
+
+<Warning>
+  You must be logged in to use the sentiment analysis feature. If your session has expired, you'll see a message prompting you to log in again.
+</Warning>
+
+If you're not authenticated, the page will display:
+- A warning icon
+- "No autenticado" message
+- An "Ir al Login" button to return to the login page
+
+See the [Authentication guide](/guides/authentication) for more details on session management.
+
+## Tips for Best Results
+
+- **Use clear, complete sentences**: The AI model works best with well-formed text
+- **Avoid mixed sentiments in one comment**: For analysis of complex feedback, consider breaking it into separate comments
+- **Language consistency**: Ensure your comments are in the language the model was trained on
+
+## Next Steps
+
+Now that you know how to analyze single comments, you might want to:
+
+- [Upload a CSV file](/guides/csv-upload) for bulk sentiment analysis
+- [View statistics](/guides/viewing-statistics) on your historical analyses

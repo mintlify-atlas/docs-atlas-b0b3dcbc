@@ -1,97 +1,121 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Welcome to SentimentAPI"
+description: "AI-powered sentiment analysis platform for analyzing customer feedback at scale"
 ---
 
-## Setting up
+<div style={{
+  background: 'linear-gradient(135deg, #7c7c7c 0%, #c4c4c4 100%)',
+  borderRadius: '12px',
+  padding: '48px 32px',
+  textAlign: 'center',
+  marginBottom: '32px'
+}}>
+  <h1 style={{
+    fontSize: '48px',
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: '16px',
+    fontFamily: 'Inter'
+  }}>
+    Stop Guessing. Listen to Your Customers at Scale.
+  </h1>
+  <p style={{
+    fontSize: '20px',
+    color: '#f0f0f0',
+    maxWidth: '800px',
+    margin: '0 auto',
+    lineHeight: '1.6'
+  }}>
+    Companies lose 40% of their customers by not responding in time. SentimentAPI analyzes thousands of comments in seconds, separating noise from real opportunities so your team can act where it really matters.
+  </p>
+</div>
 
-Get your documentation site up and running in minutes.
+## What is SentimentAPI?
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+SentimentAPI is an AI-powered sentiment analysis platform designed to help businesses understand customer feedback at scale. Process individual comments or upload thousands via CSV, get instant sentiment classifications with confidence scores, and export results for deeper analysis.
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Get up and running with SentimentAPI in minutes
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="API Reference" icon="code" href="/api/authentication/login">
+    Explore the complete API documentation
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Bulk Processing" icon="file-csv" href="/features/bulk-processing">
+    Learn how to analyze thousands of comments at once
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Statistics Dashboard" icon="chart-line" href="/features/statistics-dashboard">
+    View real-time analytics and insights
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Key Features
 
-Everything you need to create world-class documentation.
+<CardGroup cols={2}>
+  <Card title="AI-Powered Analysis" icon="brain">
+    Advanced machine learning model that classifies sentiment as POSITIVE or NEGATIVE with confidence scores
+  </Card>
+  <Card title="Bulk CSV Upload" icon="upload">
+    Process thousands of comments simultaneously by uploading CSV files up to 3MB
+  </Card>
+  <Card title="Real-Time Statistics" icon="chart-bar">
+    Interactive dashboard showing positive/negative breakdowns and percentage distributions
+  </Card>
+  <Card title="CSV Export" icon="download">
+    Export your analysis results to CSV format for further processing and reporting
+  </Card>
+  <Card title="Secure Authentication" icon="lock">
+    Token-based authentication with session management for secure access
+  </Card>
+  <Card title="Scalable Processing" icon="server">
+    Built to handle high-volume analysis with efficient batch processing
+  </Card>
+</CardGroup>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+## How It Works
 
-## Need inspiration?
+<Steps>
+  <Step title="Authenticate">
+    Log in to your SentimentAPI account to receive an authentication token
+  </Step>
+  <Step title="Analyze Comments">
+    Submit single comments or upload CSV files containing thousands of customer feedback entries
+  </Step>
+  <Step title="Get Results">
+    Receive instant sentiment classifications (POSITIVE/NEGATIVE) with confidence percentages
+  </Step>
+  <Step title="View Statistics">
+    Access your dashboard to see aggregate statistics and trends across all analyzed comments
+  </Step>
+  <Step title="Export Data">
+    Download your results as CSV files for reporting and further analysis
+  </Step>
+</Steps>
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="Customer Support Analysis">
+    Automatically classify support tickets and prioritize negative sentiment for immediate attention, reducing response times and improving customer satisfaction.
+  </Accordion>
+  <Accordion title="Product Feedback Processing">
+    Analyze thousands of product reviews to identify trends, spot issues early, and understand what features customers love or hate.
+  </Accordion>
+  <Accordion title="Social Media Monitoring">
+    Process social media mentions at scale to gauge brand sentiment and identify PR opportunities or crises in real-time.
+  </Accordion>
+  <Accordion title="Campaign Performance">
+    Measure sentiment across marketing campaigns to understand customer reception and optimize messaging strategies.
+  </Accordion>
+</AccordionGroup>
+
+## Ready to Get Started?
+
+<CardGroup cols={2}>
+  <Card title="Quickstart Guide" icon="play" href="/quickstart">
+    Follow our step-by-step guide to make your first API call
+  </Card>
+  <Card title="Authentication" icon="key" href="/guides/authentication">
+    Learn how to authenticate and manage your sessions
+  </Card>
+</CardGroup>

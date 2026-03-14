@@ -1,0 +1,219 @@
+---
+title: "Analyze Sentiment"
+api: "POST /sentiment"
+description: "Analyze sentiment for one or more text comments"
+---
+
+## Endpoint
+
+```
+POST {NEXT_PUBLIC_API_URL}/sentiment
+```
+
+Analyzes the sentiment of text comments and returns predictions with confidence scores.
+
+## Authentication
+
+This endpoint requires a valid JWT token obtained from the `/login` endpoint.
+
+## Headers
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token for authentication
+  
+  Format: `Bearer {token}`
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Must be `application/json`
+</ParamField>
+
+## Request Body
+
+The request body must be an array of objects, each containing a text field:
+
+<ParamField body="texto" type="string" required>
+  The text comment to analyze for sentiment
+</ParamField>
+
+### Request Structure
+
+```typescript
+[
+  { texto: string }
+]
+```
+
+## Response
+
+Returns an array of `SentimentResult` objects:
+
+<ResponseField name="texto" type="string">
+  The original text that was analyzed
+</ResponseField>
+
+<ResponseField name="prevision" type="string">
+  The predicted sentiment classification
+  
+  Possible values: `"POSITIVO"` | `"NEGATIVO"`
+</ResponseField>
+
+<ResponseField name="probabilidad" type="number">
+  Confidence score of the prediction (0.0 to 1.0)
+  
+  Example: `0.95` represents 95% confidence
+</ResponseField>
+
+### Response Interface
+
+```typescript
+interface SentimentResult {
+  texto: string;
+  prevision: 'POSITIVO' | 'NEGATIVO';
+  probabilidad: number;
+}
+```
+
+## Status Codes
+
+- **200 OK**: Sentiment analysis completed successfully
+- **401 Unauthorized**: Missing or invalid authentication token
+- **500 Internal Server Error**: Server error during processing
+
+## Examples
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.example.com/sentiment" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '[
+    { "texto": "This product is amazing!" }
+  ]'
+```
+
+```typescript TypeScript
+const dataToAnalyze = [
+  { texto: "This product is amazing!" }
+];
+
+const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sentiment`, {
+  method: "POST",
+  headers: { 
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  },
+  body: JSON.stringify(dataToAnalyze),
+});
+
+const results: SentimentResult[] = await response.json();
+console.log(results);
+```
+
+```javascript JavaScript
+const dataToAnalyze = [
+  { texto: "This product is amazing!" }
+];
+
+fetch(`${process.env.NEXT_PUBLIC_API_URL}/sentiment`, {
+  method: "POST",
+  headers: { 
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  },
+  body: JSON.stringify(dataToAnalyze),
+})
+  .then(response => response.json())
+  .then(data => {
+    console.log("Sentiment Results:", data);
+  });
+```
+
+</CodeGroup>
+
+## Response Example
+
+```json
+[
+  {
+    "texto": "This product is amazing!",
+    "prevision": "POSITIVO",
+    "probabilidad": 0.95
+  }
+]
+```
+
+## Multiple Comments Example
+
+<Expandable title="Analyzing Multiple Comments">
+
+```typescript
+const comments = [
+  { texto: "Great service and fast delivery!" },
+  { texto: "Very disappointed with the quality" },
+  { texto: "Exceeded my expectations" }
+];
+
+const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sentiment`, {
+  method: "POST",
+  headers: { 
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  },
+  body: JSON.stringify(comments),
+});
+
+const results = await response.json();
+```
+
+**Response:**
+
+```json
+[
+  {
+    "texto": "Great service and fast delivery!",
+    "prevision": "POSITIVO",
+    "probabilidad": 0.92
+  },
+  {
+    "texto": "Very disappointed with the quality",
+    "prevision": "NEGATIVO",
+    "probabilidad": 0.88
+  },
+  {
+    "texto": "Exceeded my expectations",
+    "prevision": "POSITIVO",
+    "probabilidad": 0.94
+  }
+]
+```
+
+</Expandable>
+
+## Error Handling
+
+<Expandable title="Authentication Errors">
+
+**Missing Token (401)**
+```json
+{
+  "error": "No estás autenticado. Por favor inicia sesión."
+}
+```
+
+**Invalid Token (401)**
+```json
+{
+  "error": "Token inválido o expirado."
+}
+```
+
+</Expandable>
+
+## Usage Notes
+
+- The `probabilidad` field is a decimal between 0 and 1 (multiply by 100 for percentage)
+- Each request can analyze one or multiple comments
+- Text should be properly encoded in UTF-8
+- Empty or whitespace-only text may produce unexpected results

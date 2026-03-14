@@ -1,0 +1,307 @@
+---
+title: "Get Statistics"
+api: "GET /stats"
+description: "Retrieve sentiment analysis statistics and recent results"
+---
+
+## Endpoint
+
+```
+GET {NEXT_PUBLIC_API_URL}/stats?size={n}
+```
+
+Retrieves aggregated sentiment statistics and recent analysis results from the database, with pagination support.
+
+## Authentication
+
+This endpoint requires a valid JWT token obtained from the `/login` endpoint.
+
+## Headers
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token for authentication
+  
+  Format: `Bearer {token}`
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Must be `application/json`
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="size" type="number" required>
+  Number of recent records to retrieve
+  
+  Example: `?size=10` retrieves the 10 most recent sentiment analysis results
+</ParamField>
+
+## Response
+
+Returns a `SentimentApiResponse` object containing statistics and paginated results:
+
+<ResponseField name="total_en_pagina" type="number">
+  Total number of results in the current page/response
+</ResponseField>
+
+<ResponseField name="positivos" type="string">
+  Percentage of positive sentiments (as string)
+  
+  Example: `"65.5"` represents 65.5%
+</ResponseField>
+
+<ResponseField name="negativos" type="string">
+  Percentage of negative sentiments (as string)
+  
+  Example: `"34.5"` represents 34.5%
+</ResponseField>
+
+<ResponseField name="content" type="array">
+  Array of sentiment analysis results
+  
+  Each item contains:
+  - `id` (number): Unique identifier
+  - `comentario` (string): The analyzed comment text
+  - `prevision` (string): Sentiment classification ("POSITIVO" | "NEGATIVO")
+  - `probabilidad` (number): Confidence score (0.0-1.0)
+  - `fecharegistro` (string): Registration timestamp
+</ResponseField>
+
+<ResponseField name="totalElements" type="number">
+  Total number of elements across all pages
+</ResponseField>
+
+<ResponseField name="totalPages" type="number">
+  Total number of pages available
+</ResponseField>
+
+<ResponseField name="number" type="number">
+  Current page number (0-indexed)
+</ResponseField>
+
+### Response Interfaces
+
+```typescript
+interface SentimentResult {
+  id: number;
+  comentario: string;
+  prevision: 'POSITIVO' | 'NEGATIVO';
+  probabilidad: number;
+  fecharegistro: string;
+}
+
+interface SentimentApiResponse {
+  total_en_pagina: number;
+  positivos: string;
+  negativos: string;
+  content: SentimentResult[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+}
+```
+
+## Status Codes
+
+- **200 OK**: Statistics retrieved successfully
+- **401 Unauthorized**: Missing or invalid authentication token
+- **500 Internal Server Error**: Server error during processing
+
+## Examples
+
+<CodeGroup>
+
+```bash cURL
+curl -X GET "https://api.example.com/stats?size=10" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+```typescript TypeScript
+const numRecords = 10;
+
+const response = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/stats?size=${numRecords}`,
+  {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+  }
+);
+
+const data: SentimentApiResponse = await response.json();
+
+console.log("Total results:", data.total_en_pagina);
+console.log("Positive %:", parseFloat(data.positivos).toFixed(1));
+console.log("Negative %:", parseFloat(data.negativos).toFixed(1));
+console.log("Results:", data.content);
+```
+
+```javascript JavaScript
+const numRecords = 10;
+
+fetch(`${process.env.NEXT_PUBLIC_API_URL}/stats?size=${numRecords}`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  },
+})
+  .then(response => response.json())
+  .then(data => {
+    console.log("Statistics:", {
+      total: data.total_en_pagina,
+      positive: `${parseFloat(data.positivos).toFixed(1)}%`,
+      negative: `${parseFloat(data.negativos).toFixed(1)}%`
+    });
+    console.log("Recent comments:", data.content);
+  });
+```
+
+</CodeGroup>
+
+## Response Example
+
+```json
+{
+  "total_en_pagina": 10,
+  "positivos": "60.0",
+  "negativos": "40.0",
+  "content": [
+    {
+      "id": 1,
+      "comentario": "Excellent service and quality",
+      "prevision": "POSITIVO",
+      "probabilidad": 0.95,
+      "fecharegistro": "2026-03-14T10:30:00"
+    },
+    {
+      "id": 2,
+      "comentario": "Poor customer support",
+      "prevision": "NEGATIVO",
+      "probabilidad": 0.87,
+      "fecharegistro": "2026-03-14T09:15:00"
+    }
+  ],
+  "totalElements": 150,
+  "totalPages": 15,
+  "number": 0
+}
+```
+
+## Data Processing Example
+
+<Expandable title="Processing Statistics Response">
+
+```typescript
+const handleAnalyze = async (numComments: number) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/stats?size=${numComments}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+      }
+    );
+
+    const data: SentimentApiResponse = await response.json();
+
+    // Extract statistics
+    const stats = {
+      total: data.total_en_pagina,
+      positivePercent: parseFloat(data.positivos).toFixed(1),
+      negativePercent: parseFloat(data.negativos).toFixed(1),
+    };
+
+    // Extract results
+    const results = data.content;
+
+    // Display statistics
+    console.log(`Total Comments: ${stats.total}`);
+    console.log(`Positive: ${stats.positivePercent}%`);
+    console.log(`Negative: ${stats.negativePercent}%`);
+
+    // Process individual results
+    results.forEach(result => {
+      console.log(`[${result.prevision}] ${result.comentario} (${(result.probabilidad * 100).toFixed(1)}%)`);
+    });
+
+  } catch (err: any) {
+    if (err.message === "Failed to fetch") {
+      console.error("Cannot connect to server");
+    } else {
+      console.error("Error:", err.message);
+    }
+  }
+};
+```
+
+</Expandable>
+
+## Pagination
+
+<Expandable title="Understanding Pagination Fields">
+
+The response includes pagination metadata:
+
+```typescript
+// Example response with pagination
+{
+  "totalElements": 150,    // Total records in database
+  "totalPages": 15,        // Total pages available (if size=10, then 150/10=15)
+  "number": 0,             // Current page number (0-indexed)
+  "total_en_pagina": 10,   // Records in current response
+  // ...
+}
+```
+
+**Calculating pages:**
+- If you request `size=10`, you get the 10 most recent records
+- `totalPages` shows how many pages of that size exist
+- `number` shows which page you're currently on (starting from 0)
+
+</Expandable>
+
+## Error Handling
+
+<Expandable title="Common Error Scenarios">
+
+**Connection Error**
+```typescript
+catch (err: any) {
+  if (err.message === "Failed to fetch") {
+    setMessage("Cannot connect to server. Check your connection.");
+  }
+}
+```
+
+**Authentication Error (401)**
+```json
+{
+  "error": "Token inválido o expirado"
+}
+```
+
+**Invalid Size Parameter**
+```typescript
+const size = parseInt(sizeInput);
+if (isNaN(size) || size <= 0) {
+  throw new Error("Size must be a positive number");
+}
+```
+
+</Expandable>
+
+## Usage Notes
+
+- The `size` parameter determines how many recent records to retrieve
+- Percentages are returned as strings and should be parsed with `parseFloat()`
+- The `content` array is ordered by registration date (most recent first)
+- The `probabilidad` field is a decimal (multiply by 100 for percentage display)
+- Use this endpoint to display dashboard statistics and recent analysis history
+- Combine with client-side CSV export for downloadable reports

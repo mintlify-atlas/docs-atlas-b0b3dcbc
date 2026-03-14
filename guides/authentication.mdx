@@ -1,0 +1,107 @@
+---
+title: 'Authentication'
+description: 'Learn how to log in to SentimentAPI and manage your session'
+---
+
+## Overview
+
+SentimentAPI uses secure session-based authentication to protect your data. Once you log in, you'll receive a session token that allows you to access all features of the platform.
+
+## Logging In
+
+<Steps>
+  <Step title="Navigate to the Login Page">
+    Open your browser and go to the SentimentAPI login page.
+  </Step>
+  
+  <Step title="Enter Your Credentials">
+    Provide your registered email address and password in the login form.
+  </Step>
+  
+  <Step title="Submit the Form">
+    Click the login button to authenticate. If your credentials are correct, you'll be automatically redirected to the sentiment analysis dashboard.
+  </Step>
+</Steps>
+
+## Session Management
+
+### How Sessions Work
+
+When you successfully log in, SentimentAPI creates a secure session token that is stored in your browser as an **httpOnly cookie**. This means:
+
+- The token is automatically sent with every request you make
+- It cannot be accessed by JavaScript, providing enhanced security
+- You don't need to manually manage or include the token in your requests
+
+### Session Duration
+
+<Note>
+  Your session token is valid for **2 hours** from the time you log in.
+</Note>
+
+After 2 hours of inactivity, your session will expire and you'll need to log in again.
+
+## When Your Session Expires
+
+If you try to access a protected feature after your session has expired, you'll see a message indicating that you're not authenticated:
+
+<Warning>
+  **No autenticado**
+  
+  Your session has expired or you haven't logged in. Please log in again.
+</Warning>
+
+When you see this message:
+
+1. Click the **"Ir al Login"** (Go to Login) button
+2. Re-enter your credentials on the login page
+3. You'll be redirected back to the application
+
+## Troubleshooting Login Issues
+
+### Incorrect Credentials
+
+If you enter the wrong email or password, you'll see an error message:
+
+```
+Credenciales incorrectas. Intenta de nuevo.
+```
+
+Double-check your email and password, then try again.
+
+### Service Unavailable
+
+If the authentication service is temporarily down, you'll see:
+
+```
+El servicio de autenticación no está disponible.
+```
+
+<Tip>
+  Wait a few moments and try logging in again. If the problem persists, contact support.
+</Tip>
+
+### Invalid Token Response
+
+In rare cases, you might see:
+
+```
+No se recibió un token válido.
+```
+
+This indicates a server-side issue. Try logging in again, and contact support if the problem continues.
+
+## Security Best Practices
+
+- **Never share your credentials** with anyone
+- **Log out** when you're done using the platform, especially on shared computers
+- Use a **strong, unique password** for your SentimentAPI account
+- If you notice any suspicious activity, change your password immediately
+
+## Next Steps
+
+Once you're logged in, you can:
+
+- [Analyze single comments](/guides/single-comment-analysis)
+- [Upload CSV files for bulk analysis](/guides/csv-upload)
+- [View statistics on your analyses](/guides/viewing-statistics)

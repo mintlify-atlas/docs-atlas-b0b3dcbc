@@ -1,0 +1,182 @@
+---
+title: 'Sentiment Analysis'
+description: 'AI-powered sentiment classification for individual comments'
+icon: 'face-smile'
+---
+
+## Overview
+
+SentimentAPI uses advanced AI models to analyze text and determine whether the sentiment is positive or negative. Each analysis includes a confidence score to help you understand how certain the model is about its prediction.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Analysis" icon="bolt">
+    Get instant sentiment predictions for single comments
+  </Card>
+  <Card title="High Accuracy" icon="check">
+    Receive confidence scores to validate prediction quality
+  </Card>
+  <Card title="Binary Classification" icon="code-branch">
+    Clear POSITIVO or NEGATIVO results
+  </Card>
+  <Card title="Easy Integration" icon="plug">
+    Simple REST API endpoint for seamless integration
+  </Card>
+</CardGroup>
+
+## How It Works
+
+The sentiment analysis engine processes your text through a trained AI model that:
+
+1. **Tokenizes** the input text
+2. **Analyzes** linguistic patterns and context
+3. **Classifies** the sentiment as POSITIVO or NEGATIVO
+4. **Calculates** a probability score (0-1) indicating confidence
+
+<Note>
+The AI model has been trained on thousands of Spanish-language comments to provide accurate sentiment detection for your audience.
+</Note>
+
+## Response Structure
+
+Every sentiment analysis request returns structured data based on this TypeScript interface:
+
+```typescript types.ts
+interface SentimentResult {
+  texto: string;              // Original comment text
+  prevision: 'POSITIVO' | 'NEGATIVO';  // Sentiment classification
+  probabilidad: number;        // Confidence score (0.0 to 1.0)
+}
+```
+
+### Example Response
+
+```json
+[
+  {
+    "texto": "Me encanta este producto, excelente calidad",
+    "prevision": "POSITIVO",
+    "probabilidad": 0.9847
+  }
+]
+```
+
+<Info>
+Probability scores closer to 1.0 indicate higher confidence. A score of 0.9847 means the model is 98.47% confident the sentiment is positive.
+</Info>
+
+## Understanding Confidence Scores
+
+### High Confidence (>0.85)
+
+The model is very certain about the classification. These predictions are highly reliable.
+
+```json
+{
+  "texto": "Terrible experiencia, no lo recomiendo",
+  "prevision": "NEGATIVO",
+  "probabilidad": 0.9621
+}
+```
+
+### Medium Confidence (0.65-0.85)
+
+Good prediction quality, but the text may contain mixed signals or neutral language.
+
+```json
+{
+  "texto": "El producto está bien, nada especial",
+  "prevision": "POSITIVO",
+  "probabilidad": 0.7234
+}
+```
+
+### Lower Confidence (Below 0.65)
+
+The model detected some sentiment but the text is ambiguous or contradictory.
+
+<Tip>
+For critical applications, you may want to manually review comments with confidence scores below 0.7.
+</Tip>
+
+## API Endpoint
+
+Send a POST request to analyze sentiment:
+
+```bash
+curl -X POST https://api.sentimentapi.com/sentiment \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '[{"texto": "Your comment here"}]'
+```
+
+<Note>
+The API accepts an array of comment objects, even for single comment analysis.
+</Note>
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="Customer Feedback Analysis">
+    Automatically categorize customer reviews and support tickets to identify satisfied vs. frustrated customers in real-time.
+  </Accordion>
+  
+  <Accordion title="Social Media Monitoring">
+    Track brand sentiment across social media comments to quickly respond to negative feedback and amplify positive mentions.
+  </Accordion>
+  
+  <Accordion title="Product Review Scoring">
+    Analyze product reviews at scale to understand overall customer satisfaction and identify areas for improvement.
+  </Accordion>
+  
+  <Accordion title="Survey Response Processing">
+    Process open-ended survey responses to quantify sentiment and extract actionable insights from qualitative data.
+  </Accordion>
+</AccordionGroup>
+
+## Implementation Example
+
+Here's how the sentiment analysis page handles individual comments:
+
+```typescript page.tsx
+const handleAnalyze = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+
+  const dataToAnalyze = [
+    { texto: comment } 
+  ];
+
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sentiment`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(dataToAnalyze),
+    });
+   
+    const data = await response.json();
+    setResults(data);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+```
+
+<Info>
+Reference: `app/sentiment/page.tsx:54-90`
+</Info>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Bulk Processing" icon="file-csv" href="/features/bulk-processing">
+    Learn how to analyze thousands of comments at once
+  </Card>
+  <Card title="Statistics Dashboard" icon="chart-bar" href="/features/statistics-dashboard">
+    View aggregate sentiment metrics
+  </Card>
+</CardGroup>

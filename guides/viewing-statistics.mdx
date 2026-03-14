@@ -1,0 +1,225 @@
+---
+title: 'Viewing Statistics'
+description: 'Access and understand your sentiment analysis statistics dashboard'
+---
+
+## Overview
+
+The Statistics Dashboard provides aggregate insights from all your previous sentiment analyses. View metrics like total comments analyzed, percentage of positive vs. negative sentiments, and detailed historical records.
+
+## Accessing the Dashboard
+
+Navigate to the **Panel de Análisis Estadístico** (Statistical Analysis Panel) from the main menu. This page displays statistical summaries and allows you to query specific amounts of historical data.
+
+<Note>
+  You must be logged in to access the statistics dashboard. If your session has expired, you'll be prompted to log in again.
+</Note>
+
+## Requesting Statistics
+
+The dashboard allows you to specify how many recent comments you want to review.
+
+<Steps>
+  <Step title="Enter the Number of Records">
+    In the left sidebar under "Numero de registros solicitados" (Number of records requested), enter the quantity of recent comments you want to analyze.
+    
+    For example, enter `100` to see statistics for the 100 most recent comments.
+  </Step>
+  
+  <Step title="Submit the Request">
+    Click the **"Analizar"** (Analyze) button. The button will show "Procesando..." (Processing) while fetching your data.
+  </Step>
+  
+  <Step title="View Results">
+    The dashboard will update with aggregate metrics and a detailed table of the requested comments.
+  </Step>
+</Steps>
+
+## Understanding the Metrics
+
+The statistics dashboard displays three key metrics in a visual card layout:
+
+### 1. Total Comentarios (Total Comments)
+
+- **Icon**: Chat bubble icon on blue background
+- **Shows**: The total number of comments in your requested dataset
+- **Example**: If you requested 100 records, this will show "100"
+
+### 2. Positivos (Positive Percentage)
+
+- **Icon**: Smile face icon on green background
+- **Shows**: Percentage of comments classified as positive sentiment
+- **Format**: Displayed as a percentage with one decimal place (e.g., "64.5%")
+- **Color**: Green to indicate positive sentiment
+
+### 3. Negativos (Negative Percentage)
+
+- **Icon**: Frown face icon on red background
+- **Shows**: Percentage of comments classified as negative sentiment
+- **Format**: Displayed as a percentage with one decimal place (e.g., "35.5%")
+- **Color**: Red to indicate negative sentiment
+
+<Tip>
+  The positive and negative percentages should add up to approximately 100%. Use these metrics to quickly assess overall sentiment trends.
+</Tip>
+
+## Detailed Results Table
+
+Below the summary metrics, you'll find a comprehensive table showing individual comment details:
+
+### Table Columns
+
+| Column | Description |
+|--------|-------------|
+| **Comentario** | The full text of each analyzed comment |
+| **Prevision** | Sentiment classification (POSITIVO/NEGATIVO) with color-coded badge |
+| **Probabilidad** | Confidence score (0-100%) with visual progress bar |
+
+### Visual Indicators
+
+- **Green badges**: Indicate positive sentiment predictions
+- **Red badges**: Indicate negative sentiment predictions
+- **Progress bars**: Show the model's confidence level
+  - Longer bars = higher confidence
+  - Color matches the sentiment (green for positive, red for negative)
+
+## Exporting Statistics to CSV
+
+You can download your statistics data for offline analysis or reporting:
+
+### Export Process
+
+1. After viewing your statistics, locate the **"Exportar CSV"** (Export CSV) button in the results header
+2. Click the button (it will show "Generando..." during generation)
+3. A CSV file will automatically download to your device with the filename:
+   ```
+   reporte_sentimientos_[timestamp].csv
+   ```
+
+### CSV File Contents
+
+The exported file includes:
+
+#### Summary Section
+```
+RESUMEN DE ANALISIS DE LOS ULTIMOS [N] COMENTARIOS
+
+Total en pagina: [number]
+Positivos: [percentage]%
+Negatives: [percentage]%
+```
+
+#### Detailed Data
+A table with columns:
+- **ID**: Unique identifier for each comment
+- **Comentario**: The comment text
+- **Prevision**: Sentiment prediction (POSITIVO/NEGATIVO)
+- **Probabilidad**: Confidence score (decimal format)
+- **Fecha Registro**: Date and time the analysis was recorded
+
+<Note>
+  The CSV uses UTF-8 encoding to properly display special characters and accents.
+</Note>
+
+## Using the Dashboard Effectively
+
+### Analyzing Trends
+
+1. **Start with a large dataset**: Request 500-1000 records to see overall trends
+2. **Compare time periods**: Note the `Fecha Registro` (Registration Date) to identify patterns over time
+3. **Track sentiment shifts**: Regular exports allow you to compare sentiment changes
+
+### Identifying Outliers
+
+Sort through the detailed table to find:
+- Comments with low confidence scores (near 50%) that may need manual review
+- Highly confident negative comments that may indicate urgent issues
+- Patterns in positive comments to understand what resonates well
+
+### Reporting
+
+Use the exported CSV files to:
+- Create charts and graphs in Excel or Google Sheets
+- Generate sentiment reports for stakeholders
+- Track sentiment KPIs over time
+- Identify areas for improvement based on negative feedback patterns
+
+## Error Handling
+
+### No Data Available
+
+If you request more records than exist in the database, the system will return all available records without error.
+
+### Session Expired
+
+<Warning>
+  **No autenticado**
+  
+  Tu sesión ha expirado o no has iniciado sesión. Por favor, vuelve a ingresar.
+</Warning>
+
+If you see this message:
+1. Click the **"Ir al Login"** button
+2. Re-enter your credentials
+3. Return to the statistics dashboard and submit your request again
+
+See the [Authentication guide](/guides/authentication) for session management details.
+
+### Connection Issues
+
+If you see:
+```
+No se pudo conectar con el servidor. Verifica tu conexión.
+```
+
+**Solution**:
+- Check your internet connection
+- Refresh the page
+- Try your request again
+
+## Best Practices
+
+### Requesting Appropriate Data Volumes
+
+- **Quick overview**: Request 50-100 records
+- **Weekly review**: Request 500-1000 records
+- **Monthly analysis**: Request all records from the past month
+- **Historical trends**: Request 5000+ records if available
+
+### Regular Monitoring
+
+<Tip>
+  Set a schedule to review your statistics regularly (e.g., weekly or monthly) to catch sentiment trends early.
+</Tip>
+
+### Data Organization
+
+- Export CSV files regularly and organize them by date
+- Use consistent naming conventions for exported files
+- Store exports in a dedicated folder for easy access
+
+## Common Questions
+
+**Q: What's the maximum number of records I can request?**
+
+A: There's no hard limit, but requesting very large datasets (10,000+) may take longer to load. The system will return all matching records.
+
+**Q: Are these real-time statistics?**
+
+A: Yes, the statistics reflect all comments analyzed up to the moment you submit your request, including recent uploads.
+
+**Q: Can I filter by date range?**
+
+A: Currently, the dashboard shows the most recent N comments. For date-range filtering, export the CSV and filter in a spreadsheet application.
+
+**Q: Why don't the percentages add up to exactly 100%?**
+
+A: The percentages are calculated from your dataset and should sum to 100%. Small rounding differences (±0.1%) may occur due to decimal precision.
+
+## Next Steps
+
+Now that you understand the statistics dashboard:
+
+- [Analyze more single comments](/guides/single-comment-analysis) to add to your dataset
+- [Upload CSV files](/guides/csv-upload) for bulk analysis
+- Learn about [session management](/guides/authentication) to maintain uninterrupted access

@@ -1,0 +1,84 @@
+---
+title: "Introduction"
+description: "Welcome to SentimentAPI - AI-powered sentiment analysis at scale"
+---
+
+## What is SentimentAPI?
+
+**SentimentAPI** is an AI-powered sentiment analysis platform that helps businesses process thousands of customer comments in seconds. Stop guessing what your customers think - SentimentAPI separates noise from real opportunities so your team can act where it truly matters.
+
+<Note>
+  Companies lose 40% of their customers by not responding in time. SentimentAPI helps you understand customer sentiment at scale to prevent customer churn and identify sales opportunities.
+</Note>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="AI-Powered Analysis" icon="brain">
+    Advanced machine learning models classify sentiment as POSITIVE or NEGATIVE with confidence scores up to 99%
+  </Card>
+  
+  <Card title="Bulk Processing" icon="database">
+    Upload CSV files with thousands of comments and analyze them all at once - no manual review needed
+  </Card>
+  
+  <Card title="Real-time Statistics" icon="chart-line">
+    Get instant insights into sentiment distribution, probability scores, and trends across your customer feedback
+  </Card>
+  
+  <Card title="CSV Export" icon="download">
+    Export analysis results with sentiment predictions and probability scores for further processing or reporting
+  </Card>
+</CardGroup>
+
+## Who Should Use SentimentAPI?
+
+SentimentAPI is designed for teams and businesses that need to:
+
+- **Customer Support Teams**: Quickly identify negative feedback that requires immediate attention
+- **Marketing Teams**: Measure campaign success in real-time by analyzing customer reactions
+- **Product Teams**: Understand user sentiment about features and identify improvement opportunities
+- **Business Analysts**: Process large volumes of feedback data for strategic decision-making
+
+## Architecture Overview
+
+SentimentAPI is built on a modern, scalable architecture:
+
+```
+┌─────────────────────┐
+│   Next.js Frontend  │
+│   (User Interface)  │
+└──────────┬──────────┘
+           │
+           │ HTTPS/REST
+           │
+┌──────────▼──────────┐
+│   Backend API       │
+│   (Sentiment Engine)│
+└─────────────────────┘
+```
+
+### Frontend
+The application uses **Next.js** with React for a fast, responsive user experience. Key features include:
+- Server-side rendering for optimal performance
+- Client-side state management for real-time updates
+- Secure authentication with HTTP-only cookies
+
+### Backend API
+The sentiment analysis engine is accessed via REST API at `NEXT_PUBLIC_API_URL`. All requests require Bearer token authentication.
+
+<Warning>
+  Authentication tokens are stored in HTTP-only cookies with a 2-hour expiration for security. Sessions will expire after 2 hours of inactivity.
+</Warning>
+
+## How It Works
+
+1. **Authenticate**: Log in to receive a secure session token
+2. **Submit Comments**: Enter individual comments or upload CSV files with bulk data
+3. **AI Analysis**: The sentiment engine processes each comment and returns predictions
+4. **View Results**: See sentiment classification (POSITIVE/NEGATIVE) with confidence scores
+5. **Export Data**: Download results for reporting or further analysis
+
+## Next Steps
+
+Ready to start analyzing sentiment? Follow our [Quickstart guide](/quickstart) to perform your first analysis in under 5 minutes.

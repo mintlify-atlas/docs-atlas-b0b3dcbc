@@ -1,0 +1,267 @@
+---
+title: 'Bulk CSV Processing'
+description: 'Upload and analyze thousands of comments in a single operation'
+icon: 'file-csv'
+---
+
+## Overview
+
+Process large volumes of comments efficiently with SentimentAPI's bulk CSV upload feature. Upload a CSV file containing hundreds or thousands of comments and receive sentiment analysis results for all of them in seconds.
+
+<Info>
+Bulk processing is perfect for analyzing survey responses, product reviews, or social media comments at scale.
+</Info>
+
+## File Requirements
+
+<CardGroup cols={2}>
+  <Card title="File Format" icon="file">
+    CSV files only (.csv extension)
+  </Card>
+  <Card title="Maximum Size" icon="scale-balanced">
+    3MB file size limit
+  </Card>
+  <Card title="Encoding" icon="language">
+    UTF-8 encoding recommended
+  </Card>
+  <Card title="Processing Speed" icon="gauge-high">
+    Thousands of comments in seconds
+  </Card>
+</CardGroup>
+
+### File Size Validation
+
+The system validates file size before upload to prevent oversized files:
+
+```typescript upload-csv/page.tsx
+const MAX_SIZE_MB = 3 * 1024 * 1024;
+if (selectedFile.size > MAX_SIZE_MB) {
+  setMessage(`El archivo es demasiado pesado (${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB). Por favor, sube uno menor a 3MB.`);
+  setUploadStatus('error');
+  return;
+}
+```
+
+<Note>
+Reference: `app/sentiment/upload-csv/page.tsx:138-143`
+</Note>
+
+<Warning>
+Files larger than 3MB will be rejected. If you need to process larger datasets, split them into multiple files or contact support for enterprise options.
+</Warning>
+
+## Expected CSV Format
+
+Your CSV file should contain comments in a structured format. Here's the expected structure:
+
+```csv
+texto
+"Me encanta este producto"
+"No funcionó como esperaba"
+"Excelente servicio al cliente"
+"La entrega fue muy lenta"
+```
+
+<Tip>
+Ensure your CSV has a header row with the column name `texto` for the comment field.
+</Tip>
+
+### Multi-column Support
+
+If your CSV contains additional columns, the API will extract the `texto` column:
+
+```csv
+id,texto,fecha
+1,"Producto excelente",2026-03-10
+2,"No lo recomiendo",2026-03-11
+3,"Muy satisfecho con la compra",2026-03-12
+```
+
+## Upload Process
+
+### 1. Select File
+
+The upload interface provides a drag-and-drop area or file selector:
+
+```typescript upload-csv/page.tsx
+const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  if (event.target.files && event.target.files[0]) {
+    setSelectedFile(event.target.files[0]);
+    setUploadStatus(null);
+    setMessage('');
+  }
+};
+```
+
+### 2. Submit for Analysis
+
+Once selected, the file is sent to the API for processing:
+
+```typescript upload-csv/page.tsx
+const formData = new FormData();
+formData.append('file', selectedFile);
+
+const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sentiment/upload-csv`, {
+  method: "POST",
+  headers: { "Authorization": `Bearer ${token}` },
+  body: formData,
+});
+
+const data = await response.json();
+setResultados(data);
+```
+
+<Info>
+Reference: `app/sentiment/upload-csv/page.tsx:149-177`
+</Info>
+
+### 3. View Results
+
+Results are displayed in a structured table showing:
+
+- Original comment text
+- Sentiment prediction (POSITIVO/NEGATIVO)
+- Confidence probability
+- Visual indicators and progress bars
+
+## Response Structure
+
+The bulk analysis returns an array of sentiment results:
+
+```typescript
+interface AnalisisResultado {
+  texto: string;
+  prevision: 'POSITIVO' | 'NEGATIVO';
+  probabilidad: number;
+}
+```
+
+### Example Bulk Response
+
+```json
+[
+  {
+    "texto": "Excelente producto, muy satisfecho",
+    "prevision": "POSITIVO",
+    "probabilidad": 0.9823
+  },
+  {
+    "texto": "Mala calidad, no lo recomiendo",
+    "prevision": "NEGATIVO",
+    "probabilidad": 0.9456
+  },
+  {
+    "texto": "Buen precio y entrega rápida",
+    "prevision": "POSITIVO",
+    "probabilidad": 0.9112
+  }
+]
+```
+
+## Error Handling
+
+The system provides detailed error messages for common issues:
+
+<AccordionGroup>
+  <Accordion title="File Too Large (401/413)">
+    ```typescript
+    case 401:
+      throw new Error("El archivo supera el límite de 3MB. Intenta con un archivo más pequeño.");
+    case 413:
+      throw new Error("El servidor indica que el archivo es demasiado grande.");
+    ```
+    
+    **Solution**: Split your CSV into smaller files or reduce the number of comments.
+  </Accordion>
+  
+  <Accordion title="Authentication Error (403)">
+    ```typescript
+    case 403:
+      throw new Error("No tienes permisos para realizar esta acción.");
+    ```
+    
+    **Solution**: Verify your API token is valid and has the correct permissions.
+  </Accordion>
+  
+  <Accordion title="Server Error (500)">
+    ```typescript
+    case 500:
+      throw new Error("Error interno del servidor. Inténtalo más tarde.");
+    ```
+    
+    **Solution**: Retry the upload. If the problem persists, contact support.
+  </Accordion>
+  
+  <Accordion title="Connection Error">
+    ```typescript
+    if (err.message === "Failed to fetch") {
+      setMessage("No se pudo conectar con el servidor. Verifica tu conexión.");
+    }
+    ```
+    
+    **Solution**: Check your internet connection and verify the API endpoint is accessible.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+Reference: `app/sentiment/upload-csv/page.tsx:160-190`
+</Note>
+
+## Performance Tips
+
+<CardGroup cols={2}>
+  <Card title="Optimize File Size" icon="compress">
+    Remove unnecessary columns to reduce file size
+  </Card>
+  <Card title="Clean Your Data" icon="broom">
+    Remove empty rows and duplicate comments before uploading
+  </Card>
+  <Card title="Batch Large Datasets" icon="layer-group">
+    Split files larger than 3MB into multiple batches
+  </Card>
+  <Card title="Use UTF-8 Encoding" icon="font">
+    Ensure proper encoding for special characters
+  </Card>
+</CardGroup>
+
+## Use Cases
+
+### Customer Survey Analysis
+
+Upload survey responses to quickly identify overall sentiment trends:
+
+```bash
+# Process 5,000 survey responses
+# Result: 73% positive, 27% negative
+```
+
+### Product Review Processing
+
+Analyze all product reviews from e-commerce platforms:
+
+```bash
+# Upload reviews.csv with 2,347 reviews
+# Identify top complaints and praise points
+```
+
+### Social Media Comment Analysis
+
+Process exported social media comments:
+
+```bash
+# Analyze Instagram/Facebook comments
+# Track sentiment changes over time
+```
+
+## Next Steps
+
+After processing your bulk data:
+
+<CardGroup cols={2}>
+  <Card title="Export Results" icon="download" href="/features/csv-export">
+    Download your analyzed data as CSV
+  </Card>
+  <Card title="View Statistics" icon="chart-line" href="/features/statistics-dashboard">
+    See aggregate metrics and trends
+  </Card>
+</CardGroup>

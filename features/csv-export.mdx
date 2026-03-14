@@ -1,0 +1,438 @@
+---
+title: 'CSV Export'
+description: 'Download sentiment analysis results in CSV format for reporting and analysis'
+icon: 'download'
+---
+
+## Overview
+
+SentimentAPI allows you to export your sentiment analysis results as CSV files for use in spreadsheets, reporting tools, or further data analysis. Export functionality is available from both the bulk processing page and the statistics dashboard.
+
+<CardGroup cols={2}>
+  <Card title="Complete Dataset Export" icon="table">
+    Export all comments with their sentiment predictions
+  </Card>
+  <Card title="Summary Statistics" icon="chart-pie">
+    Include aggregate metrics in the export header
+  </Card>
+  <Card title="Local Generation" icon="computer">
+    CSV files are generated client-side for instant download
+  </Card>
+  <Card title="UTF-8 Encoding" icon="language">
+    Proper encoding for international characters
+  </Card>
+</CardGroup>
+
+## Export from Statistics Dashboard
+
+The statistics dashboard export includes both summary statistics and detailed comment data:
+
+### Export Implementation
+
+```typescript statistics/page.tsx
+const handleExportCSV = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
+
+  if (!dataResponse || !dataResponse.content) {
+    setMessage("No hay datos para exportar");
+    return;
+  }
+
+  try {
+    setDowloading(true);
+
+    // Define headers
+    const headers = ["ID", "   Comentario", "     Prevision", "    Probabilidad", "    Fecha Registro "];
+    
+    // Create summary section
+    let csvContent = `\n RESUMEN DE ANALISIS DE LOS ULTIMOS ${dataResponse.total_en_pagina} COMENTARIOS \n\n `;
+    csvContent += ` Total en pagina, ${dataResponse.total_en_pagina}\n`;
+    csvContent += ` Positivos, ${dataResponse.positivos}\n`;
+    csvContent += ` Negativos, ${dataResponse.negativos}\n\n\n`;
+    
+    // Add column headers
+    csvContent += headers.join(",") + "\n";
+
+    // Map comment data
+    const rows = dataResponse.content.map((item: any) => {
+      const comentarioLimpio = item.comentario.replace(/\n/g, " ").replace(/"/g, '""');
+      
+      return [
+        item.id,
+        `"${comentarioLimpio}"`,
+        item.prevision,
+        item.probabilidad,
+        `"${item.fecharegistro}"`
+      ].join(",");
+    });
+
+    csvContent += rows.join("\n");
+
+    // Create blob and download
+    const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `reporte_sentimientos_${new Date().getTime()}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    setMessage("CSV generado localmente con éxito");
+  } catch (err) {
+    console.error("Error al generar CSV:", err);
+    setMessage("Error al generar el archivo");
+  } finally {
+    setDowloading(false);
+  }
+};
+```
+
+<Note>
+Reference: `app/sentiment/statistics/page.tsx:85-149`
+</Note>
+
+### File Structure Example
+
+The exported CSV includes a summary header followed by detailed data:
+
+```csv
+RESUMEN DE ANALISIS DE LOS ULTIMOS 100 COMENTARIOS
+
+Total en pagina, 100
+Positivos, 68.5
+Negativos, 31.5
+
+
+ID,   Comentario,     Prevision,    Probabilidad,    Fecha Registro
+1245,"Excelente servicio al cliente",POSITIVO,0.9634,"2026-03-14T10:30:00"
+1246,"El producto llegó dañado",NEGATIVO,0.9112,"2026-03-14T11:15:00"
+1247,"Muy satisfecho con la compra",POSITIVO,0.9823,"2026-03-14T12:00:00"
+```
+
+<Info>
+The summary section provides quick insights, while the detailed rows allow for deep analysis in Excel or other tools.
+</Info>
+
+## Export from Bulk Processing
+
+After uploading and processing a CSV file, you can export the results:
+
+### API-Based Export
+
+```typescript upload-csv/page.tsx
+const handleExportCSV = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
+  setDowloading(true);
+  
+  if (!token) {
+    setMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+    setUploadStatus('error');
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/sentiment/export-csv`, 
+      {
+        method: "POST",
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(resultados),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: No se pudo generar el CSV`);
+    }
+
+    // Convert response to blob
+    const blob = await response.blob();
+    
+    // Create temporary URL and download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "resultados_sentimiento.csv";
+    document.body.appendChild(a);
+    a.click();
+    
+    // Cleanup
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    setDowloading(false);
+    setMessage('¡Excelente! El archivo se exportó correctamente.');
+    setUploadStatus('success');
+  } catch (err: any) {
+    setUploadStatus('error');
+    if (err.message === "Failed to fetch") {
+      setMessage("No se pudo conectar con el servidor.");
+    } else {
+      setMessage(err.message);
+    }
+  }
+};
+```
+
+<Note>
+Reference: `app/sentiment/upload-csv/page.tsx:60-112`
+</Note>
+
+### Exported CSV Format
+
+Bulk processing exports contain:
+
+```csv
+texto,prevision,probabilidad
+"Excelente producto, muy satisfecho",POSITIVO,0.9823
+"Mala calidad, no lo recomiendo",NEGATIVO,0.9456
+"Buen precio y entrega rápida",POSITIVO,0.9112
+"Servicio al cliente muy lento",NEGATIVO,0.8734
+```
+
+## CSV Features
+
+### UTF-8 BOM Encoding
+
+Exported files include UTF-8 BOM (`\ufeff`) for proper character encoding:
+
+```typescript
+const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+```
+
+<Tip>
+This ensures special characters (accents, tildes, etc.) display correctly in Excel and other spreadsheet applications.
+</Tip>
+
+### Text Cleaning
+
+Comment text is automatically cleaned before export:
+
+```typescript
+const comentarioLimpio = item.comentario
+  .replace(/\n/g, " ")      // Remove line breaks
+  .replace(/"/g, '""');     // Escape double quotes
+```
+
+### Timestamp-Based Filenames
+
+Each export gets a unique filename with timestamp:
+
+```typescript
+link.setAttribute("download", `reporte_sentimientos_${new Date().getTime()}.csv`);
+```
+
+Example filename: `reporte_sentimientos_1710410400000.csv`
+
+<Info>
+Timestamped filenames prevent accidental overwrites when exporting multiple datasets.
+</Info>
+
+## Column Definitions
+
+<AccordionGroup>
+  <Accordion title="ID (Statistics Export Only)">
+    Unique identifier for each comment in the database
+    ```csv
+    ID
+    1245
+    1246
+    ```
+  </Accordion>
+  
+  <Accordion title="Comentario / Texto">
+    The original comment text, properly escaped and quoted
+    ```csv
+    Comentario
+    "Excelente servicio, muy profesional"
+    "No funcionó como esperaba"
+    ```
+  </Accordion>
+  
+  <Accordion title="Prevision">
+    Sentiment classification: POSITIVO or NEGATIVO
+    ```csv
+    Prevision
+    POSITIVO
+    NEGATIVO
+    ```
+  </Accordion>
+  
+  <Accordion title="Probabilidad">
+    Confidence score as a decimal (0.0 to 1.0)
+    ```csv
+    Probabilidad
+    0.9823
+    0.8456
+    ```
+  </Accordion>
+  
+  <Accordion title="Fecha Registro (Statistics Export Only)">
+    Timestamp when the comment was analyzed
+    ```csv
+    Fecha Registro
+    "2026-03-14T10:30:00"
+    "2026-03-14T11:15:00"
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Using Exported Data
+
+### Excel Analysis
+
+Import the CSV into Excel for:
+
+- Pivot tables showing sentiment distribution
+- Charts visualizing positive vs negative trends
+- Conditional formatting to highlight low-confidence predictions
+- Filtering comments by probability threshold
+
+### Google Sheets Integration
+
+```bash
+# Import to Google Sheets
+1. Open Google Sheets
+2. File > Import > Upload
+3. Select your CSV file
+4. Choose "Replace spreadsheet" or "Insert new sheet(s)"
+```
+
+### Data Analysis Tools
+
+Use with Python pandas for advanced analysis:
+
+```python
+import pandas as pd
+
+# Read exported CSV
+df = pd.read_csv('reporte_sentimientos_1710410400000.csv', skiprows=5)
+
+# Calculate statistics
+print(f"Average confidence: {df['Probabilidad'].mean():.2f}")
+print(f"Positive ratio: {(df['Prevision'] == 'POSITIVO').sum() / len(df):.2%}")
+
+# Filter high-confidence predictions
+high_conf = df[df['Probabilidad'] > 0.85]
+```
+
+### Business Intelligence Tools
+
+Import into BI platforms:
+
+- **Tableau**: Create interactive sentiment dashboards
+- **Power BI**: Build automated reports
+- **Looker**: Integrate with other data sources
+- **Metabase**: Self-service analytics
+
+## Download Process
+
+The export process is fully client-side for instant results:
+
+1. **Generate CSV Content** - Format data as CSV string
+2. **Create Blob** - Convert to binary large object with UTF-8 encoding
+3. **Generate URL** - Create temporary object URL
+4. **Trigger Download** - Programmatically click download link
+5. **Cleanup** - Remove temporary DOM elements and revoke URL
+
+<Warning>
+Ensure your browser allows downloads from the SentimentAPI domain. Some browsers may block automatic downloads for security reasons.
+</Warning>
+
+## Use Cases
+
+### Monthly Reporting
+
+Export the last 30 days of data for executive reports:
+
+```bash
+1. Go to Statistics Dashboard
+2. Request size=5000 (approximate monthly volume)
+3. Click "Exportar CSV"
+4. Open in Excel and create charts
+```
+
+### Customer Support Analysis
+
+Identify trending issues from negative comments:
+
+```bash
+1. Export recent data
+2. Filter for NEGATIVO sentiment
+3. Sort by probabilidad (high to low)
+4. Review top negative comments for patterns
+```
+
+### A/B Testing Results
+
+Compare sentiment before and after changes:
+
+```bash
+1. Export baseline data (before change)
+2. Export post-change data
+3. Compare positive/negative ratios
+4. Calculate statistical significance
+```
+
+### Quality Assurance
+
+Review low-confidence predictions:
+
+```bash
+1. Export recent analysis
+2. Filter probabilidad < 0.70
+3. Manually review ambiguous comments
+4. Provide feedback to improve model
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Export Button Disabled">
+    **Cause**: No data available to export
+    
+    **Solution**: Run an analysis first (either bulk upload or statistics request) before attempting to export.
+  </Accordion>
+  
+  <Accordion title="Special Characters Appear as Gibberish">
+    **Cause**: Incorrect encoding in spreadsheet application
+    
+    **Solution**: 
+    - In Excel: Use "Get Data" > "From File" > "From Text/CSV" and select UTF-8 encoding
+    - The exported file includes UTF-8 BOM which should handle this automatically
+  </Accordion>
+  
+  <Accordion title="Download Doesn't Start">
+    **Cause**: Browser blocking automatic downloads
+    
+    **Solution**: 
+    - Check browser's download settings
+    - Allow pop-ups and downloads from the SentimentAPI domain
+    - Try a different browser if the issue persists
+  </Accordion>
+  
+  <Accordion title="Empty or Incomplete Export">
+    **Cause**: Network error during export generation
+    
+    **Solution**: 
+    - Check your internet connection
+    - Retry the export
+    - If using bulk export, ensure the API endpoint is accessible
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="View Statistics" icon="chart-line" href="/features/statistics-dashboard">
+    Explore the statistics dashboard
+  </Card>
+  <Card title="Upload More Data" icon="upload" href="/features/bulk-processing">
+    Process additional CSV files
+  </Card>
+</CardGroup>

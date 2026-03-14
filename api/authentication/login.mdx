@@ -1,0 +1,131 @@
+---
+title: "Login"
+api: "POST /login"
+description: "Authenticate a user and obtain a JWT token"
+---
+
+## Endpoint
+
+```
+POST {NEXT_PUBLIC_API_URL}/login
+```
+
+Authenticates a user with their email and password, returning a JWT token for subsequent API requests.
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  The user's email address
+</ParamField>
+
+<ParamField body="contrasenia" type="string" required>
+  The user's password (Spanish: contraseña)
+</ParamField>
+
+## Response
+
+<ResponseField name="token" type="string">
+  JWT authentication token to be used in subsequent API requests via the Authorization header
+</ResponseField>
+
+## Status Codes
+
+- **200 OK**: Authentication successful, token returned
+- **401 Unauthorized**: Invalid credentials
+- **403 Forbidden**: Access denied
+- **500 Internal Server Error**: Service unavailable
+
+## Examples
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.example.com/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "contrasenia": "password123"
+  }'
+```
+
+```typescript TypeScript
+const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ 
+    email: "user@example.com", 
+    contrasenia: "password123" 
+  }),
+});
+
+if (!response.ok) {
+  throw new Error("Authentication failed");
+}
+
+const data = await response.json();
+const token = data.token;
+```
+
+```javascript JavaScript
+fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ 
+    email: "user@example.com", 
+    contrasenia: "password123" 
+  }),
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Authentication failed");
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log("Token:", data.token);
+  });
+```
+
+</CodeGroup>
+
+## Response Example
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+## Error Handling
+
+<Expandable title="Common Error Responses">
+
+**Invalid Credentials (401)**
+```json
+{
+  "error": "Credenciales incorrectas. Intenta de nuevo."
+}
+```
+
+**Service Unavailable**
+```json
+{
+  "error": "El servicio de autenticación no está disponible."
+}
+```
+
+**No Token Received**
+```json
+{
+  "error": "No se recibió un token válido."
+}
+```
+
+</Expandable>
+
+## Usage Notes
+
+- The token has a 2-hour expiration (7200 seconds)
+- Store the token securely (httpOnly cookies recommended)
+- Include the token in all authenticated requests using the `Authorization: Bearer {token}` header
+- If authentication fails, check credentials and server availability
