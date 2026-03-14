@@ -1,0 +1,77 @@
+{
+  "projectType": "saas",
+  "projectName": "SentimentAPI",
+  "projectDescription": "AI-powered sentiment analysis platform for analyzing customer feedback at scale",
+  "theme": "palm",
+  "primaryColor": "#7c7c7c",
+  "lightColor": "#070707",
+  "darkColor": "#c4c4c4",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/sentiment-analysis",
+              "features/bulk-processing",
+              "features/statistics-dashboard",
+              "features/csv-export"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/authentication",
+              "guides/single-comment-analysis",
+              "guides/csv-upload",
+              "guides/viewing-statistics"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Authentication",
+            "pages": [
+              "api/authentication/login"
+            ]
+          },
+          {
+            "group": "Sentiment Analysis",
+            "pages": [
+              "api/sentiment/analyze",
+              "api/sentiment/upload-csv",
+              "api/sentiment/export-csv",
+              "api/sentiment/statistics"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "AI-powered sentiment analysis with confidence scores",
+    "Bulk CSV upload for processing thousands of comments",
+    "Real-time statistical dashboard with positive/negative breakdowns",
+    "CSV export functionality for analysis results",
+    "Secure authentication and session management"
+  ],
+  "publicApiSurface": [
+    "POST /login - User authentication",
+    "POST /sentiment - Analyze single or batch comments",
+    "POST /sentiment/upload-csv - Upload CSV file for bulk analysis",
+    "POST /sentiment/export-csv - Export analysis results to CSV",
+    "GET /stats - Retrieve sentiment statistics"
+  ]
+}
